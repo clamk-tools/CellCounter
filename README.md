@@ -16,6 +16,7 @@ Tap a zone to count a live or dead cell. The app keeps a running concentration a
 - **Light and dark:** follows your system setting until you flip the switch in the header. On the web the choice is shared with the [clamk-tools hub](https://clamk-tools.github.io/) and the other tools.
 - **Sound and haptics:** the speaker icon opens a volume slider and mute button; settings has mute and haptic feedback switches.
 - **Data** lists your current numbers: the inputs (square volume, factor, dilution, squares counted), the mean per square and the results. It can copy the summary or send it through the share sheet.
+- **Back to the other tools:** on the web, "← All tools" in the header (under the name on a narrow phone) goes to the [clamk-tools hub](https://clamk-tools.github.io/). The Android and iOS apps don't show it.
 - **Info** (the ⓘ icon in the header) is the one-screen reference: what one square is in each chamber, the formulas, the counting rules and the precision.
 - **Keyboard on web:** ← / ↑ count the left or top zone, → / ↓ the other. On a computer, each zone shows its keys faintly in a corner.
 - **Screen readers** get an "add one live/dead cell" action on every counting zone, including the diagonal layout.
