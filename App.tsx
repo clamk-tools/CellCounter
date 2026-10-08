@@ -270,6 +270,8 @@ export default function App() {
   const { width: winW, height: winH } = useWindowDimensions();
   const scale = Math.min(1.3, Math.max(0.8, Math.min(Math.min(winW, MAX_CONTENT_WIDTH) / 390, winH / 800)));
   const tight = winH < 700;
+  // Web only: under this width the header can't fit the hub link beside the buttons, so it goes under the name.
+  const hubUnderName = winW < HUB_LINK_MIN_WIDTH;
   const styles = useMemo(() => makeStyles(theme, scale, tight), [theme, scale, tight]);
   useEffect(setupWebViewport, []);
   useEffect(() => applyWebTheme(theme, themeChoice), [theme, themeChoice]);
@@ -422,11 +424,15 @@ export default function App() {
 
       <View style={styles.root}>
       <View style={styles.header}>
-        <View style={styles.brand}>
-          <View style={styles.brandDot} />
-          <Text style={styles.brandName} accessibilityRole="header">Cell Counter</Text>
+        <View>
+          <View style={styles.brand}>
+            <View style={styles.brandDot} />
+            <Text style={styles.brandName} accessibilityRole="header">Cell Counter</Text>
+          </View>
+          {Platform.OS === 'web' && hubUnderName && <HubLink underName styles={styles} />}
         </View>
         <View style={styles.headerActions}>
+          {Platform.OS === 'web' && !hubUnderName && <HubLink styles={styles} />}
           <IconButton label="Info" onPress={() => setInfoOpen(true)} styles={styles}>
             <Icon d={ICONS.info} color={theme.muted} size={20} />
           </IconButton>
@@ -1000,6 +1006,22 @@ function DataRow({ label, value, styles }: { label: string; value: string; style
 }
 
 // Quiet square button holding one icon. hitSlop brings the 32px square up to a touch target.
+// Web only: a quiet link back to the Clamk Tools hub, before the header buttons, or under the name on a window
+// narrower than HUB_LINK_MIN_WIDTH. Native builds leave it out, since it would leave the app for the browser.
+// `href` makes react-native-web render a real <a>; React Native's types don't list it.
+const HUB_URL = 'https://clamk-tools.github.io/';
+const HUB_LINK_MIN_WIDTH = 440;
+
+function HubLink({ underName = false, styles }: { underName?: boolean; styles: Styles }) {
+  return (
+    <Pressable {...({ href: HUB_URL } as {})} accessibilityRole="link" style={underName ? styles.hubLinkUnderName : styles.hubLink}>
+      {({ hovered }: PressState) => (
+        <Text style={[styles.hubLinkText, underName && styles.hubLinkTextUnderName, hovered && styles.hubLinkTextHover]}>← All tools</Text>
+      )}
+    </Pressable>
+  );
+}
+
 function IconButton({
   label,
   onPress,
@@ -1364,6 +1386,12 @@ function makeStyles(t: Theme, s: number, tight: boolean) {
     brandDot: { width: 9, height: 9, borderRadius: RADIUS.pill, backgroundColor: t.accent },
     brandName: { color: t.text, fontSize: 17, fontFamily: f.b, letterSpacing: -0.17 },
     headerActions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    hubLink: { paddingHorizontal: 4, paddingVertical: 6, marginRight: 4 },
+    // Under the name: lined up with the name's text (dot 9 + gap 9), so the header grows by one short line.
+    hubLinkUnderName: { alignSelf: 'flex-start', marginLeft: 18, paddingVertical: 2 },
+    hubLinkText: { color: t.muted, fontSize: 14, fontFamily: f.m },
+    hubLinkTextUnderName: { fontSize: 13 },
+    hubLinkTextHover: { color: t.text },
     iconButton: { width: 32, height: 32, borderRadius: RADIUS.control, alignItems: 'center', justifyContent: 'center' },
     // Hover and pressed states: a blue border on outlined controls, a blue tint on quiet ones.
     controlHover: { borderColor: t.accent },

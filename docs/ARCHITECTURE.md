@@ -92,7 +92,7 @@ Theme + scale + tight → makeStyles() → styles (passed to components as a pro
 
 - **Colours:** `THEMES` holds the identity's tokens per mode: cool neutrals (`bg`, `surface`, `text`, `muted`, `border`, `rail`), one blue `accent` for everything interactive (selection, focus ring, primary button, switches), and two marker colours. Live is the green marker and dead the coral one, so blue never carries meaning. A `Marker` has a `tint` (zone background), an `ink` (dots, large numerals), a text-safe `text` (small text; the light inks fail contrast below about 19px bold) and a `pressed` tint. Coral is also the danger colour ("Reset all").
 - **Construction:** flat. 1px hairlines and the `bg` / `surface` step separate layers; radii are 7 (controls) and 9 (cards, zones, dialogs). The only shadow is on the modal sheets and the only gradient is the 6px `Rail` at the top.
-- **Frame:** rail, then a header with the accent dot and the tool name on the left and the sound, settings and theme controls on the right. Groups are introduced by a `SectionLabel` (mono, uppercase, tracked, with a hairline to the right edge).
+- **Frame:** rail, then a header with the accent dot and the tool name on the left and the info, sound, settings and theme controls on the right. On web, `HubLink` ("← All tools", to the hub) sits before those controls, or under the name when the window is narrower than `HUB_LINK_MIN_WIDTH` (440): below that the row can't hold it and the theme switch would be pushed off screen. Groups are introduced by a `SectionLabel` (mono, uppercase, tracked, with a hairline to the right edge).
 - **Mode:** `themeChoice` is `null` until the user flips the header switch, and the system setting applies until then (`userInterfaceStyle` is `automatic` in `app.json`). On web the choice is read from and written to localStorage under `clamk-tools:theme`, the key the hub and every tool share on that origin; the app's own saved `themeMode` is ignored there. `applyWebTheme` mirrors the result onto `<html>` (`data-theme`, the `--accent` variable for the focus ring, `color-scheme`). `public/index.html` does the same before first paint with an inline script and the two `bg` colours, so the page isn't white while the bundle loads; keep those colours equal to `THEMES`.
 - **Sizing:** `scale` sizes the large numerals: the smaller of `min(width, 560) / 390` and `height / 800`, clamped to 0.8–1.3. `tight` (window under 700 high) shrinks the header padding and the gaps between groups so the zones keep room. Content is at most `MAX_CONTENT_WIDTH` (560) wide and centred; the rail is full width.
 
@@ -114,6 +114,7 @@ Theme + scale + tight → makeStyles() → styles (passed to components as a pro
 | Counting keys | – | – | Arrow keys, off while a modal is open or an input has focus |
 | Theme choice | Saved with the settings | Saved with the settings | Shared `clamk-tools:theme` key |
 | Hover and focus | – | – | Pressables read `hovered` (`PressState`); the focus ring and the 120 ms border transition are CSS from `setupWebViewport`, dropped for `prefers-reduced-motion` |
+| Hub link | – | – | `HubLink` in the header (it would leave the app for the browser on native) |
 | Viewport | – | – | `setupWebViewport`: `100dvh`, no double-tap zoom, no text selection outside inputs |
 
 `app.json` blocks unused Android permissions (`RECORD_AUDIO`, external storage) and disables backup. It deliberately keeps `INTERNET` and `SYSTEM_ALERT_WINDOW`, which development builds need to reach Metro.
@@ -131,6 +132,7 @@ Theme + scale + tight → makeStyles() → styles (passed to components as a pro
 | `Btn` | Secondary, primary and danger buttons, with hover, pressed and disabled states |
 | `IconButton`, `Icon` | Quiet icon button; line icons drawn from the paths in `ICONS` |
 | `ThemeSwitch` | Header light/dark toggle, with a sun or moon in the knob |
+| `HubLink` | Web only. Quiet "← All tools" link to the hub; `href` makes react-native-web render a real `<a>` |
 | `VolumeSlider` | View responder props rather than `PanResponder` (see React Compiler). A drag follows `pageX` from touch-down; with two fingers, whichever moved. Accessibility increment/decrement steps by 0.1 |
 | `SpeakerIcon` | Header and sound modal |
 | `MenuItem` | Chamber picker row |
